@@ -4,7 +4,7 @@ Next.js + TypeScript + Supabase, desplegado en Vercel.
 
 ## Setup para nuevos desarrolladores
 
-1. Pide acceso a la org `Cuba-Rugby-tech` en GitHub y a los proyectos de Supabase y Vercel.
+1. Guía completa (incluye Claude Code): [`docs/onboarding.md`](docs/onboarding.md). Pide acceso a la org `Cuba-Rugby-tech` en GitHub y a los proyectos de Supabase y Vercel.
 2. Clona el repo e instala dependencias:
    ```bash
    git clone https://github.com/Cuba-Rugby-tech/web.app.git
