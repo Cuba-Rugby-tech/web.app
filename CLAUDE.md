@@ -1,6 +1,21 @@
 # web.app
 
-Proyecto de Cuba Rugby. Equipo de 2-3 desarrolladores, todos trabajando con Claude Code.
+Proyecto del departamento de Tecnología de la capitanía de Rugby del CUBA. Equipo de 2-3 desarrolladores, todos trabajando con Claude Code.
+
+## Contexto del proyecto
+
+- **Objetivo:** construir herramientas tecnológicas que generen información valiosa para la toma de decisiones en el rugby del CUBA.
+- **Foco inicial:** planteles juveniles.
+- **Horizonte:** proyecto a largo plazo; el alcance general aún no está cerrado y se define módulo a módulo.
+- **Enfoque modular:** cada funcionalidad es un módulo independiente que se suma de forma incremental. El roadmap, los módulos y los KPIs viven en `docs/roadmap.md`.
+- Al proponer o implementar algo, priorizar que los datos sirvan para medir KPIs y tomar decisiones, no solo para registrar información.
+
+### Cómo se agrega un módulo
+
+1. Definirlo en `docs/roadmap.md` (objetivo, KPIs, quién carga y quién consulta los datos).
+2. Rutas en `src/app/<modulo>/` y componentes propios en `src/components/<modulo>/`.
+3. Tablas en Supabase con RLS, reutilizando la base común (planteles, jugadores, temporadas, usuarios) en lugar de duplicarla.
+4. Un PR por módulo o por parte del módulo; nunca mezclar módulos en un mismo PR.
 
 ## Stack
 
