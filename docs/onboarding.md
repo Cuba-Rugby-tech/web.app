@@ -5,7 +5,7 @@ Guía para sumarse al proyecto web.app (Tecnología Rugby CUBA) trabajando con C
 ## Antes de empezar (lo hace un admin)
 
 1. Invitarte a la organización `Cuba-Rugby-tech` en GitHub con permiso **Write** sobre el repo.
-2. Pasarte por un canal privado los valores de Supabase (`NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY`).
+2. Pasarte por un canal privado los valores de Firebase para tu `.env.local` (ver `.env.example`).
 
 ## Pasos
 
