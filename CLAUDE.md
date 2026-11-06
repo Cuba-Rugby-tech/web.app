@@ -14,14 +14,14 @@ Proyecto del departamento de Tecnología de la capitanía de Rugby del CUBA. Equ
 
 1. Definirlo en `docs/roadmap.md` (objetivo, KPIs, quién carga y quién consulta los datos).
 2. Rutas en `src/app/<modulo>/` y componentes propios en `src/components/<modulo>/`.
-3. Tablas en Supabase con RLS, reutilizando la base común (planteles, jugadores, temporadas, usuarios) en lugar de duplicarla.
+3. Colecciones en Firestore protegidas con Security Rules (`firestore.rules`), reutilizando la base común (planteles, jugadores, temporadas, usuarios) en lugar de duplicarla.
 4. Un PR por módulo o por parte del módulo; nunca mezclar módulos en un mismo PR.
 
 ## Stack
 
 - Next.js 15 (App Router) + React 19 + TypeScript
 - Tailwind CSS v4
-- Supabase (Postgres + Auth) vía `@supabase/ssr`
+- Firebase: Auth (login), Firestore (base de datos NoSQL) y Cloud Messaging (push)
 - Deploy: Vercel (preview por PR, producción desde `main`)
 
 ## Comandos
@@ -37,8 +37,9 @@ Antes de dar una tarea por terminada: `npm run lint && npm run typecheck`.
 
 - `src/app/` — rutas (App Router)
 - `src/components/` — componentes reutilizables
-- `src/lib/supabase/client.ts` — Supabase en Client Components
-- `src/lib/supabase/server.ts` — Supabase en Server Components / Actions / Route Handlers
+- `src/lib/firebase/client.ts` — Firebase en el navegador (`auth`, `db`)
+- `src/lib/firebase/admin.ts` — Firebase Admin SDK, solo servidor (Server Components / Actions / Route Handlers)
+- `firestore.rules` — Security Rules de Firestore (por defecto todo denegado)
 - `src/lib/` — utilidades
 
 ## Reglas de Git (obligatorias)
@@ -61,5 +62,12 @@ Antes de dar una tarea por terminada: `npm run lint && npm run typecheck`.
 ## Seguridad
 
 - Nunca leer, imprimir ni commitear `.env` / `.env.local`. Las variables necesarias están en `.env.example`.
-- Solo la `anon key` de Supabase va en el frontend. La `service_role` key nunca va al cliente.
-- Toda tabla de Supabase debe tener Row Level Security (RLS) activado.
+- Solo las variables `NEXT_PUBLIC_FIREBASE_*` van al frontend. Las credenciales del Admin SDK (`FIREBASE_PRIVATE_KEY`, etc.) nunca van al cliente.
+- Toda colección de Firestore debe tener reglas explícitas en `firestore.rules`; nunca dejar reglas abiertas (`allow read, write: if true`).
+- El Admin SDK saltea las Security Rules: validar el rol del usuario antes de usarlo.
+
+## Firestore y KPIs
+
+- Firestore es NoSQL: no hay JOINs ni agregaciones complejas.
+- Los KPIs (ej.: % de asistencia por división y mes) se guardan como totales precalculados (Cloud Functions o al escribir), no se calculan recorriendo todas las colecciones.
+- Diseñar las colecciones pensando en las consultas que se van a hacer.

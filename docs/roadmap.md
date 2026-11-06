@@ -9,7 +9,7 @@ Generar información valiosa para la toma de decisiones en el rugby del CUBA, co
 ## Decisiones generales
 
 - **Carga de datos:** la hacen principalmente los **jugadores**, a demanda, desde el celular.
-- **App:** PWA (instalable desde el navegador, sin tiendas) con **notificaciones push** para pedir la carga de datos (ej.: "¿Fuiste al entrenamiento de hoy?", "Cargá tu peso del mes", "¿Cómo sigue tu lesión?").
+- **App:** PWA (instalable desde el navegador, sin tiendas) con **notificaciones push** (Firebase Cloud Messaging) para pedir la carga de datos (ej.: "¿Fuiste al entrenamiento de hoy?", "Cargá tu peso del mes", "¿Cómo sigue tu lesión?").
 - **Validación:** el staff puede validar o corregir lo que carga el jugador (en especial presentismo), para que los KPIs sean confiables.
 - **Datos sensibles:** lesiones y datos corporales son datos de salud de menores (Ley 25.326). Acceso restringido por rol y consentimiento de los padres gestionado por el club.
 
@@ -22,7 +22,7 @@ Generar información valiosa para la toma de decisiones en el rugby del CUBA, co
 | Coordinación de Rugby | Ver todo; reportes de todas las divisiones |
 | Admin (Tecnología) | Gestionar usuarios, roles y configuración |
 
-Los permisos se aplican con Row Level Security (RLS) en Supabase.
+Los permisos se aplican con Firestore Security Rules (`firestore.rules`). El rol de cada usuario se guarda en su perfil (o como custom claim de Firebase Auth).
 
 ## Base común (previa a los módulos)
 
