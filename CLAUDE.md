@@ -10,6 +10,10 @@ Proyecto del departamento de Tecnología de la capitanía de Rugby del CUBA. Equ
 - **Enfoque modular:** cada funcionalidad es un módulo independiente que se suma de forma incremental. El roadmap, los módulos y los KPIs viven en `docs/roadmap.md`.
 - Al proponer o implementar algo, priorizar que los datos sirvan para medir KPIs y tomar decisiones, no solo para registrar información.
 
+### Marca
+
+Identidad, escudo y colores del club en `docs/marca.md`. Escudo en `public/brand/cuba-escudo.png`. Usar siempre esa paleta (azul `#0B3D91`, negro, blanco) en la UI.
+
 ### Cómo se agrega un módulo
 
 1. Definirlo en `docs/roadmap.md` (objetivo, KPIs, quién carga y quién consulta los datos).
