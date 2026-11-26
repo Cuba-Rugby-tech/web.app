@@ -22,7 +22,7 @@ Proyecto del departamento de Tecnología de la capitanía de Rugby del CUBA. Equ
 - Next.js 15 (App Router) + React 19 + TypeScript
 - Tailwind CSS v4
 - Firebase: Auth (login), Firestore (base de datos NoSQL) y Cloud Messaging (push)
-- Deploy: Vercel (preview por PR, producción desde `main`)
+- Deploy: Firebase Hosting, proyecto `cubaglogin`, plan Spark (sin servidor). Preview por PR y producción desde `main` vía GitHub Actions (`.github/workflows/deploy.yml`)
 
 ## Comandos
 
@@ -38,7 +38,6 @@ Antes de dar una tarea por terminada: `npm run lint && npm run typecheck`.
 - `src/app/` — rutas (App Router)
 - `src/components/` — componentes reutilizables
 - `src/lib/firebase/client.ts` — Firebase en el navegador (`auth`, `db`)
-- `src/lib/firebase/admin.ts` — Firebase Admin SDK, solo servidor (Server Components / Actions / Route Handlers)
 - `firestore.rules` — Security Rules de Firestore (por defecto todo denegado)
 - `src/lib/` — utilidades
 
@@ -54,7 +53,8 @@ Antes de dar una tarea por terminada: `npm run lint && npm run typecheck`.
 ## Convenciones de código
 
 - TypeScript estricto; evitar `any`.
-- Server Components por defecto; `"use client"` solo cuando haga falta interactividad.
+- La app es una **exportación estática** (`output: "export"`): no usar API Routes, Server Actions, middleware, `cookies()`/`headers()` ni rutas dinámicas sin `generateStaticParams`.
+- Los datos de Firestore y el login se usan desde Client Components (`"use client"`) con `src/lib/firebase/client.ts`. Las páginas pueden ser Server Components solo para contenido estático.
 - Usar el alias `@/` para imports desde `src/`.
 - Componentes en PascalCase (`PlayerCard.tsx`); utilidades en camelCase.
 - Estilos con clases de Tailwind; nada de CSS suelto salvo `globals.css`.
@@ -62,12 +62,12 @@ Antes de dar una tarea por terminada: `npm run lint && npm run typecheck`.
 ## Seguridad
 
 - Nunca leer, imprimir ni commitear `.env` / `.env.local`. Las variables necesarias están en `.env.example`.
-- Solo las variables `NEXT_PUBLIC_FIREBASE_*` van al frontend. Las credenciales del Admin SDK (`FIREBASE_PRIVATE_KEY`, etc.) nunca van al cliente.
+- La app solo usa las variables `NEXT_PUBLIC_FIREBASE_*` (públicas). Nunca commitear claves de service accounts (`*firebase-adminsdk*.json`).
 - Toda colección de Firestore debe tener reglas explícitas en `firestore.rules`; nunca dejar reglas abiertas (`allow read, write: if true`).
-- El Admin SDK saltea las Security Rules: validar el rol del usuario antes de usarlo.
+- Las Security Rules son la única barrera de seguridad (no hay servidor): toda validación de permisos va en `firestore.rules`.
 
 ## Firestore y KPIs
 
 - Firestore es NoSQL: no hay JOINs ni agregaciones complejas.
-- Los KPIs (ej.: % de asistencia por división y mes) se guardan como totales precalculados (Cloud Functions o al escribir), no se calculan recorriendo todas las colecciones.
+- Los KPIs (ej.: % de asistencia por división y mes) se guardan como totales precalculados (se actualizan al escribir el dato; Cloud Functions no está disponible en Spark), no se calculan recorriendo todas las colecciones.
 - Diseñar las colecciones pensando en las consultas que se van a hacer.
