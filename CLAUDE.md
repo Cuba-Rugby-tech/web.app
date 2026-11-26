@@ -14,15 +14,15 @@ Proyecto del departamento de Tecnología de la capitanía de Rugby del CUBA. Equ
 
 1. Definirlo en `docs/roadmap.md` (objetivo, KPIs, quién carga y quién consulta los datos).
 2. Rutas en `src/app/<modulo>/` y componentes propios en `src/components/<modulo>/`.
-3. Tablas en Supabase con RLS, reutilizando la base común (planteles, jugadores, temporadas, usuarios) en lugar de duplicarla.
+3. Colecciones en Firestore protegidas con Security Rules (`firestore.rules`), reutilizando la base común (planteles, jugadores, temporadas, usuarios) en lugar de duplicarla.
 4. Un PR por módulo o por parte del módulo; nunca mezclar módulos en un mismo PR.
 
 ## Stack
 
 - Next.js 15 (App Router) + React 19 + TypeScript
 - Tailwind CSS v4
-- Supabase (Postgres + Auth) vía `@supabase/ssr`
-- Deploy: Vercel (preview por PR, producción desde `main`)
+- Firebase: Auth (login), Firestore (base de datos NoSQL) y Cloud Messaging (push)
+- Deploy: Firebase Hosting, proyecto `cubaglogin`, plan Spark (sin servidor). Preview por PR y producción desde `main` vía GitHub Actions (`.github/workflows/deploy.yml`)
 
 ## Comandos
 
@@ -37,8 +37,8 @@ Antes de dar una tarea por terminada: `npm run lint && npm run typecheck`.
 
 - `src/app/` — rutas (App Router)
 - `src/components/` — componentes reutilizables
-- `src/lib/supabase/client.ts` — Supabase en Client Components
-- `src/lib/supabase/server.ts` — Supabase en Server Components / Actions / Route Handlers
+- `src/lib/firebase/client.ts` — Firebase en el navegador (`auth`, `db`)
+- `firestore.rules` — Security Rules de Firestore (por defecto todo denegado)
 - `src/lib/` — utilidades
 
 ## Reglas de Git (obligatorias)
@@ -53,7 +53,8 @@ Antes de dar una tarea por terminada: `npm run lint && npm run typecheck`.
 ## Convenciones de código
 
 - TypeScript estricto; evitar `any`.
-- Server Components por defecto; `"use client"` solo cuando haga falta interactividad.
+- La app es una **exportación estática** (`output: "export"`): no usar API Routes, Server Actions, middleware, `cookies()`/`headers()` ni rutas dinámicas sin `generateStaticParams`.
+- Los datos de Firestore y el login se usan desde Client Components (`"use client"`) con `src/lib/firebase/client.ts`. Las páginas pueden ser Server Components solo para contenido estático.
 - Usar el alias `@/` para imports desde `src/`.
 - Componentes en PascalCase (`PlayerCard.tsx`); utilidades en camelCase.
 - Estilos con clases de Tailwind; nada de CSS suelto salvo `globals.css`.
@@ -61,5 +62,12 @@ Antes de dar una tarea por terminada: `npm run lint && npm run typecheck`.
 ## Seguridad
 
 - Nunca leer, imprimir ni commitear `.env` / `.env.local`. Las variables necesarias están en `.env.example`.
-- Solo la `anon key` de Supabase va en el frontend. La `service_role` key nunca va al cliente.
-- Toda tabla de Supabase debe tener Row Level Security (RLS) activado.
+- La app solo usa las variables `NEXT_PUBLIC_FIREBASE_*` (públicas). Nunca commitear claves de service accounts (`*firebase-adminsdk*.json`).
+- Toda colección de Firestore debe tener reglas explícitas en `firestore.rules`; nunca dejar reglas abiertas (`allow read, write: if true`).
+- Las Security Rules son la única barrera de seguridad (no hay servidor): toda validación de permisos va en `firestore.rules`.
+
+## Firestore y KPIs
+
+- Firestore es NoSQL: no hay JOINs ni agregaciones complejas.
+- Los KPIs (ej.: % de asistencia por división y mes) se guardan como totales precalculados (se actualizan al escribir el dato; Cloud Functions no está disponible en Spark), no se calculan recorriendo todas las colecciones.
+- Diseñar las colecciones pensando en las consultas que se van a hacer.
